@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import AppRoutes from './routes/Routes'
 
-const App = () => {
+
+const AppRoutes = () => {
   return (
-    <AppRoutes />
+    <Router>
+      <ReactRoutes>
+        <Route path="/" element={<Home />} />
+      </ReactRoutes>
+    </Router>
   )
 }
 
