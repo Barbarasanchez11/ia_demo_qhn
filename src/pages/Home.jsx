@@ -1,78 +1,40 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import Formulario from '../components/Formulario'
+import Chatbot from '../components/Chatbot'
 
-const Formulario = ({ onSave }) => {
-  const [datos, setDatos] = useState({
-    miembros: '',
-    ninos: '',
-    edades: '',
-    ciudad: ''
-  })
+const Home = () => {
+  const [tienePerfil, setTienePerfil] = useState(false)
 
-  const manejarCambio = (e) => {
-    const { name, value } = e.target
-    setDatos({
-      ...datos,
-      [name]: value
-    })
-  }
+  console.log('¿Tiene perfil guardado?', tienePerfil)
 
-  const manejarEnvio = (e) => {
-    e.preventDefault()
-    console.log('Formulario enviado con datos:', datos)
-    onSave(datos) // Llama al padre (Home.jsx) para guardar en localStorage
+  useEffect(() => {
+    const datosGuardados = localStorage.getItem('perfil_usuario')
+
+    if (datosGuardados) {
+      console.log('Perfil encontrado en localStorage:', JSON.parse(datosGuardados))
+      setTienePerfil(true)
+    } else {
+      console.log('No hay perfil guardado aún.')
+    }
+  }, [])
+
+  const manejarGuardadoPerfil = (datos) => {
+    console.log('Guardando perfil del usuario:', datos)
+    localStorage.setItem('perfil_usuario', JSON.stringify(datos))
+    setTienePerfil(true)
   }
 
   return (
-    <form onSubmit={manejarEnvio}>
-      <h2>Queremos conocerte mejor 😊</h2>
+    <div>
+      <h1>Bienvenido a Qué hacer con los niños</h1>
 
-      <label>
-        ¿Cuántos miembros hay en tu familia?
-        <input
-          type="number"
-          name="miembros"
-          value={datos.miembros}
-          onChange={manejarCambio}
-          required
-        />
-      </label>
-
-      <label>
-        ¿Cuántos niños hay?
-        <input
-          type="number"
-          name="ninos"
-          value={datos.ninos}
-          onChange={manejarCambio}
-          required
-        />
-      </label>
-
-      <label>
-        ¿Qué edades tienen los niños? (separadas por comas)
-        <input
-          type="text"
-          name="edades"
-          value={datos.edades}
-          onChange={manejarCambio}
-          required
-        />
-      </label>
-
-      <label>
-        ¿En qué ciudad vives?
-        <input
-          type="text"
-          name="ciudad"
-          value={datos.ciudad}
-          onChange={manejarCambio}
-          required
-        />
-      </label>
-
-      <button type="submit">Guardar y continuar</button>
-    </form>
+      {tienePerfil ? (
+        <Chatbot />
+      ) : (
+        <Formulario onSave={manejarGuardadoPerfil} />
+      )}
+    </div>
   )
 }
 
-export default Formulario
+export default Home
