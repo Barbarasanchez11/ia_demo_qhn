@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Formulario from '../components/Formulario'
-import Chatbot from '../components/Chatbot'
+import Formulario from '../components/Formulario/Formulario'
+import Chatbot from '../components/Chatbot/Chatbot'
 
 const Home = () => {
   const [tienePerfil, setTienePerfil] = useState(false)

@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import AppRoutes from './routes/Routes'
 
 
-const AppRoutes = () => {
+const App = () => {
   return (
-    <Router>
-      <ReactRoutes>
-        <Route path="/" element={<Home />} />
-      </ReactRoutes>
-    </Router>
+    <AppRoutes />
   )
 }
 
