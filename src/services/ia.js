@@ -27,4 +27,3 @@ export const obtenerRespuestaIA = async (userMessage, context = '') => {
 
   return text
 }
-export default obtenerRespuestaIA

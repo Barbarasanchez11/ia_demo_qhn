@@ -1,41 +1,62 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { obtenerRespuestaIA } from '../../services/ia'
 
 const Chatbot = () => {
-  const [mensajes, setMensajes] = useState([
-    { emisor: 'bot', texto: '¡Hola! ¿En qué puedo ayudarte hoy?' }
+  const [messages, setMessages] = useState([
+    { sender: 'bot', text: '¡Hola! ¿En qué puedo ayudarte hoy?' }
   ])
-  const [entrada, setEntrada] = useState('')
+  const [input, setInput] = useState('')
+  const [userProfile, setUserProfile] = useState('')
 
-  const enviarMensaje = async () => {
-    if (entrada.trim() === '') return
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('perfil_usuario')
+    if (savedProfile) {
+      const profile = JSON.parse(savedProfile)
+      const summary = `Este usuario vive en ${profile.ciudad}, tiene ${profile.ninos} niños de edades ${profile.edades} y ${profile.miembros} miembros en total en su familia.`
+      setUserProfile(summary)
+    }
+  }, [])
 
-    const mensajeUsuario = { emisor: 'usuario', texto: entrada }
-    setMensajes((prev) => [...prev, mensajeUsuario])
-    setEntrada('')
 
-    const respuestaBot = await obtenerRespuestaIA(entrada)
-    setMensajes((prev) => [...prev, { emisor: 'bot', texto: respuestaBot }])
-  }
+  const sendMessage = async () => {
+    if (input.trim() === '') return
 
-  const obtenerRespuestaIA = async (texto) => {
-    // Aquí iría la integración con Google AI Studio
-    return `Estoy procesando tu solicitud: "${texto}"`
+    const userMessage = { sender: 'user', text: input }
+    setMessages((prev) => [...prev, userMessage])
+    setInput('')
+
+    const botReply = await obtenerRespuestaIA(input, userProfile)
+    const botMessage = { sender: 'bot', text: botReply }
+
+    setMessages((prev) => [...prev, botMessage])
   }
 
   return (
     <div>
-      <div className="chat-box" style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
-        {mensajes.map((msg, idx) => (
-          <p key={idx}><strong>{msg.emisor}:</strong> {msg.texto}</p>
+      <div
+        className="chat-box"
+        style={{
+          border: '1px solid #ccc',
+          padding: '1rem',
+          marginBottom: '1rem',
+          maxHeight: '400px',
+          overflowY: 'auto'
+        }}
+      >
+        {messages.map((msg, idx) => (
+          <p key={idx}>
+            <strong>{msg.sender === 'bot' ? 'Bot' : 'Tú'}:</strong> {msg.text}
+          </p>
         ))}
       </div>
       <input
         type="text"
-        value={entrada}
-        onChange={(e) => setEntrada(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && enviarMensaje()}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+        placeholder="Escribe tu mensaje..."
       />
-      <button onClick={enviarMensaje}>Enviar</button>
+      <button onClick={sendMessage}>Enviar</button>
     </div>
   )
 }
